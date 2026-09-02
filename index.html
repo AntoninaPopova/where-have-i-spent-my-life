@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Where Have I Spent My Life?</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<main>
+
+    <header>
+
+        <h1>WHERE HAVE I SPENT MY LIFE?</h1>
+
+        <p class="subtitle">
+            A life is distributed across cities, countries and continents: some places take up years, others only a moment.
+            Duration, however, is not the same as intensity.
+            A few days can sometimes matter more than years.
+            This map traces that distribution through the places I’ve lived, studied and visited, from a few days to several years.
+        </p>
+
+    </header>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+        <div class="control-group">
+
+            <span class="control-label">FILTER BY</span>
+
+            <button class="filter active" data-type="all">
+                Everything
+            </button>
+
+            <button class="filter" data-type="lived">
+                Lived
+            </button>
+
+            <button class="filter" data-type="studied">
+                Studied
+            </button>
+
+            <button class="filter" data-type="visited">
+                Visited
+            </button>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <span class="control-label">TIME SCALE</span>
+
+            <button class="scale-button" data-scale="linear">
+                Linear
+            </button>
+
+            <button class="scale-button active" data-scale="log">
+                Logarithmic
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAP -->
+
+    <div class="map-container">
+
+        <div id="map"></div>
+
+
+        <!-- LEGEND -->
+
+        <div class="legend">
+
+            <h3>WITH WHOM</h3>
+
+            <div class="legend-item">
+                <span class="legend-dot alone"></span>
+                <span>Alone</span>
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot family"></span>
+                <span>With family</span>
+            </div>
+
+            <div class="legend-item">
+                <span class="legend-dot friends"></span>
+                <span>With friends</span>
+            </div>
+
+
+            <h3>TIME SPENT</h3>
+
+            <div class="time-legend">
+
+                <div class="time-item">
+
+                    <span class="time-circle time-short"></span>
+
+                    <div class="time-description">
+                        <span class="time-title">Short stay</span>
+                    </div>
+
+                </div>
+
+
+                <div class="time-item">
+
+                    <span class="time-circle time-long"></span>
+
+                    <div class="time-description">
+                        <span class="time-title">Long stay</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ZOOM CONTROLS -->
+
+        <div class="zoom-controls">
+
+            <button id="zoom-in">+</button>
+            <button id="zoom-out">−</button>
+            <button id="zoom-reset">Reset</button>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- TOOLTIP -->
+
+<div id="tooltip"></div>
+
+
+<!-- D3 -->
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+
+<!-- TopoJSON -->
+
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+
+
+<!-- YOUR JAVASCRIPT -->
+
+<script src="script.js"></script>
+
+</body>
+</html>

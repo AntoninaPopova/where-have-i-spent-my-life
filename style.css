@@ -1,0 +1,420 @@
+* {
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   PAGE
+   ========================= */
+
+body {
+    margin: 0; /*25px*/
+
+    background: #f7f7f5;
+    color: #22223B;
+
+    font-family: Arial, sans-serif;
+}
+
+main {
+    width: 100%;
+
+    margin: 30px 0;
+    padding: 0 30px;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+header {
+    margin-bottom: 0;
+}
+
+h1 {
+    margin: 50px 0 6px 0;
+
+    font-size: 38px;
+    font-weight: 500;
+
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    margin: 0;
+    margin-top: 20px;
+    margin-bottom: 20px; 
+
+    max-width: 850px;
+
+    font-size: 14px;
+    font-weight: 400;
+
+    line-height: 1.5;
+
+    color: #777;
+}
+
+
+/* =========================
+   CONTROLS
+   ========================= */
+
+.controls {
+    display: flex;
+    align-items: center;
+
+    gap: 55px;
+
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+    min-height: 34px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+
+    gap: 3px;
+}
+
+.control-label {
+    margin-right: 7px;
+
+    font-family: inherit;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    color: #777;
+}
+
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+.filter,
+.scale-button {
+    border: none;
+
+    background: transparent;
+
+    padding: 6px 10px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    color: #22223B;
+
+    cursor: pointer;
+}
+
+.filter:hover,
+.scale-button:hover {
+    background: #e9e9e5;
+}
+
+.filter.active,
+.scale-button.active {
+    background: #22223B;
+    color: #f7f7f5;
+}
+
+
+/* =========================
+   MAP
+   ========================= */
+
+.map-container {
+    position: relative;
+
+    width: 100%;
+
+    height: calc(100vh - 300px); /*calc(100vh - 190px);*/
+
+    min-height: 0; /*550px;*/
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+svg {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+}
+
+
+/* =========================
+   COUNTRIES
+   ========================= */
+
+.country {
+    fill: #e5e5e1;
+
+    stroke: #ffffff;
+    stroke-width: 0.5px;
+}
+
+
+/* =========================
+   PLACES
+   ========================= */
+
+.place {
+    cursor: pointer;
+
+    stroke: none;
+}
+
+.place:hover {
+    stroke: #22223B;
+    stroke-width: 1px;
+}
+
+
+/* =========================
+   LEGEND
+   ========================= */
+
+.legend {
+    position: absolute;
+
+    top: 25px;
+    right: 15px;
+
+    width: 145px;
+
+    padding: 15px;
+
+    background: rgba(247, 247, 245, 0.94);
+
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.legend h3 {
+    margin: 0 0 10px 0;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    color: #22223B;
+}
+
+.legend h3:not(:first-child) {
+    margin-top: 22px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 12px;
+    font-weight: 400;
+}
+
+
+/* =========================
+   COMPANION DOTS
+   ========================= */
+
+.legend-dot {
+    display: inline-block;
+
+    width: 9px;
+    height: 9px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+}
+
+.legend-dot.alone {
+    background: #C9ADA7;
+}
+
+.legend-dot.family {
+    background: #9A8C98;
+}
+
+.legend-dot.friends {
+    background: #22223B;
+}
+
+
+/* =========================
+   TIME LEGEND
+   ========================= */
+
+.time-legend {
+    display: flex;
+    flex-direction: column;
+
+    gap: 13px;
+}
+
+.time-item {
+    display: flex;
+    align-items: center;
+}
+
+.time-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    flex-shrink: 0;
+}
+
+.time-circle::before {
+    content: "";
+
+    display: block;
+
+    border-radius: 50%;
+
+    background: #22223B;
+}
+
+.time-short::before {
+    width: 7px;
+    height: 7px;
+
+    opacity: 0.9;
+}
+
+.time-long::before {
+    width: 18px;
+    height: 18px;
+
+    opacity: 0.2;
+}
+
+.time-description {
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 10px;
+
+    gap: 2px;
+}
+
+.time-title {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+
+/* =========================
+   ZOOM CONTROLS
+   ========================= */
+
+.zoom-controls {
+    position: absolute;
+
+    bottom: 25px;
+    left: 30px;
+
+    display: flex;
+
+    gap: 4px;
+}
+
+.zoom-controls button {
+    border: none;
+
+    background: rgba(247, 247, 245, 0.94);
+
+    padding: 7px 10px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    color: #22223B;
+
+    cursor: pointer;
+}
+
+.zoom-controls button:hover {
+    background: #e9e9e5;
+}
+
+
+/* =========================
+   TOOLTIP
+   ========================= */
+
+#tooltip {
+    position: fixed;
+
+    display: none;
+
+    max-width: 280px;
+
+    padding: 14px 16px;
+
+    background: #f7f7f5;
+
+    border: 1px solid #d8d8d4;
+
+    pointer-events: none;
+
+    font-family: inherit;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    line-height: 1.5;
+
+    color: #22223B;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+#tooltip strong {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    letter-spacing: 0.03em;
+
+    text-transform: uppercase;
+}
+
+.tooltip-story {
+    margin-bottom: 9px;
+
+    line-height: 1.5;
+}
+
+.tooltip-meta {
+    font-size: 11px;
+
+    color: #777;
+}
