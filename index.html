@@ -7,163 +7,231 @@
 
     <title>Where Have I Spent My Life?</title>
 
+
+    <meta name="description" content="An interactive map visualizing where I have lived, studied, worked and travelled, and how much time I have spent in each place.">
+    <meta name="robots" content="index, follow">
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<main>
+    <main>
 
-    <header>
+        <!-- =========================
+             HEADER
+             ========================= -->
 
-        <h1>WHERE HAVE I SPENT MY LIFE?</h1>
+        <header>
 
-        <p class="subtitle">
-            A life is distributed across cities, countries and continents: some places take up years, others only a moment.
-            Duration, however, is not the same as intensity.
-            A few days can sometimes matter more than years.
-            This map traces that distribution through the places I’ve lived, studied and visited, from a few days to several years.
-        </p>
+            <h1>WHERE HAVE I SPENT MY LIFE?</h1>
 
-    </header>
+            <p class="subtitle">
+                A life is distributed across cities, countries and continents: some places take up years, others only a moment.
+                Duration, however, is not the same as intensity. A few days can sometimes matter more than years.
+                This map traces that distribution through the places I’ve lived, studied, worked and travelled,
+                from a few days to several years.
+            </p>
+
+        </header>
 
 
-    <!-- CONTROLS -->
+        <!-- =========================
+             CONTROLS
+             ========================= -->
 
-    <div class="controls">
+        <div class="controls">
 
-        <div class="control-group">
+            <div class="control-group">
 
-            <span class="control-label">FILTER BY</span>
+                <span class="control-label">
+                    FILTER BY
+                </span>
 
-            <button class="filter active" data-type="all">
-                Everything
-            </button>
+                <button class="filter-btn active" data-filter="all">
+                    All
+                </button>
 
-            <button class="filter" data-type="lived">
-                Lived
-            </button>
+                <button class="filter-btn" data-filter="lived">
+                    Home
+                </button>
 
-            <button class="filter" data-type="studied">
-                Studied
-            </button>
+                <button class="filter-btn" data-filter="studied">
+                    Purpose
+                </button>
 
-            <button class="filter" data-type="visited">
-                Visited
-            </button>
+                <button class="filter-btn" data-filter="visited">
+                    Leisure
+                </button>
+
+            </div>
+
+
+            <div class="control-group">
+
+                <span class="control-label">
+                    TIME SCALE
+                </span>
+
+                <button class="scale-btn" data-scale="linear">
+                    Linear
+                </button>
+
+                <button class="scale-btn active" data-scale="log">
+                    Logarithmic
+                </button>
+
+            </div>
 
         </div>
 
 
-        <div class="control-group">
+        <!-- =========================
+             MAP AREA
+             ========================= -->
 
-            <span class="control-label">TIME SCALE</span>
+        <div class="map-area">
 
-            <button class="scale-button" data-scale="linear">
-                Linear
-            </button>
+            <div class="map-container">
 
-            <button class="scale-button active" data-scale="log">
-                Logarithmic
-            </button>
-
-        </div>
-
-    </div>
+                <div id="map"></div>
 
 
-    <!-- MAP -->
+                <!-- =====================
+                     ZOOM CONTROLS
+                     ===================== -->
 
-    <div class="map-container">
+                <div class="zoom-controls">
 
-        <div id="map"></div>
+                    <button id="zoom-in" aria-label="Zoom in">
+                        +
+                    </button>
 
+                    <button id="zoom-out" aria-label="Zoom out">
+                        −
+                    </button>
 
-        <!-- LEGEND -->
-
-        <div class="legend">
-
-            <h3>WITH WHOM</h3>
-
-            <div class="legend-item">
-                <span class="legend-dot alone"></span>
-                <span>Alone</span>
-            </div>
-
-            <div class="legend-item">
-                <span class="legend-dot family"></span>
-                <span>With family</span>
-            </div>
-
-            <div class="legend-item">
-                <span class="legend-dot friends"></span>
-                <span>With friends</span>
-            </div>
-
-
-            <h3>TIME SPENT</h3>
-
-            <div class="time-legend">
-
-                <div class="time-item">
-
-                    <span class="time-circle time-short"></span>
-
-                    <div class="time-description">
-                        <span class="time-title">Short stay</span>
-                    </div>
-
-                </div>
-
-
-                <div class="time-item">
-
-                    <span class="time-circle time-long"></span>
-
-                    <div class="time-description">
-                        <span class="time-title">Long stay</span>
-                    </div>
+                    <button id="zoom-reset">
+                        Reset
+                    </button>
 
                 </div>
 
             </div>
 
+
+            <!-- =========================
+                 LEGEND
+                 ========================= -->
+
+            <div class="legend">
+
+                <!-- WITH WHOM -->
+
+                <div class="legend-section">
+
+                    <h3>
+                        WITH WHOM
+                    </h3>
+
+                    <div class="legend-item">
+
+                        <span class="legend-dot alone"></span>
+
+                        <span>
+                            Alone
+                        </span>
+
+                    </div>
+
+
+                    <div class="legend-item">
+
+                        <span class="legend-dot family"></span>
+
+                        <span>
+                            With family
+                        </span>
+
+                    </div>
+
+
+                    <div class="legend-item">
+
+                        <span class="legend-dot friends"></span>
+
+                        <span>
+                            With friends
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TIME SPENT -->
+
+                <div class="legend-section">
+
+                    <h3>
+                        TIME SPENT
+                    </h3>
+
+                    <div class="time-legend">
+
+                        <div class="time-item">
+
+                            <span class="time-circle time-short"></span>
+
+                            <span class="time-description">
+                                <span class="time-title">
+                                    Short stay
+                                </span>
+                            </span>
+
+                        </div>
+
+
+                        <div class="time-item">
+
+                            <span class="time-circle time-long"></span>
+
+                            <span class="time-description">
+                                <span class="time-title">
+                                    Long stay
+                                </span>
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
 
-        <!-- ZOOM CONTROLS -->
+        <!-- =========================
+             TOOLTIP
+             ========================= -->
 
-        <div class="zoom-controls">
+        <div id="tooltip"></div>
 
-            <button id="zoom-in">+</button>
-            <button id="zoom-out">−</button>
-            <button id="zoom-reset">Reset</button>
-
-        </div>
-
-    </div>
-
-</main>
+    </main>
 
 
-<!-- TOOLTIP -->
+    <!-- =========================
+         LIBRARIES
+         ========================= -->
 
-<div id="tooltip"></div>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 
-<!-- D3 -->
-
-<script src="https://d3js.org/d3.v7.min.js"></script>
-
-
-<!-- TopoJSON -->
-
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-
-
-<!-- YOUR JAVASCRIPT -->
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
+
 </html>

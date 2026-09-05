@@ -66,7 +66,31 @@ Promise.all([
         d.longitude = +d.longitude;
         d.days = +d.days;
 
+        /*
+         * Support both possible column names.
+         */
+
+        d.companions = (
+            d.companions ||
+            d.companion ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+        /*
+         * Normalize place type as well.
+         */
+
+        d.type = (
+            d.type ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
     });
+
 
     console.log("Places:", places);
 
@@ -108,34 +132,42 @@ Promise.all([
 
 
     // ==========================================
-    // TIME SCALES
+    // TIME SCALE
     // ==========================================
 
     let currentScale = "log";
 
 
-    // Linear radius
+    // ==========================================
+    // LINEAR RADIUS
+    // ==========================================
 
     const radiusLinear = d3.scaleLinear()
         .domain([minDays, maxDays])
         .range([2.5, 18]);
 
 
-    // Logarithmic radius
+    // ==========================================
+    // LOGARITHMIC RADIUS
+    // ==========================================
 
     const radiusLog = d3.scaleLog()
         .domain([minDays, maxDays])
         .range([2.5, 18]);
 
 
-    // Linear opacity
+    // ==========================================
+    // LINEAR OPACITY
+    // ==========================================
 
     const opacityLinear = d3.scaleLinear()
         .domain([minDays, maxDays])
         .range([0.9, 0.18]);
 
 
-    // Logarithmic opacity
+    // ==========================================
+    // LOGARITHMIC OPACITY
+    // ==========================================
 
     const opacityLog = d3.scaleLog()
         .domain([minDays, maxDays])
@@ -153,7 +185,6 @@ Promise.all([
         }
 
         return radiusLog(days);
-
     }
 
 
@@ -164,7 +195,6 @@ Promise.all([
         }
 
         return opacityLog(days);
-
     }
 
 
@@ -177,8 +207,6 @@ Promise.all([
         "alone": "#C9ADA7",
 
         "with family": "#9A8C98",
-
-        /*"with husband": "#4A4E69",*/
 
         "with friends": "#22223B"
 
@@ -206,7 +234,9 @@ Promise.all([
         .attr("class", "place")
 
 
-        // Position
+        // ==========================================
+        // POSITION
+        // ==========================================
 
         .attr("cx", d => {
 
@@ -227,28 +257,38 @@ Promise.all([
         })
 
 
-        // Size
+        // ==========================================
+        // SIZE
+        // ==========================================
 
-        .attr("r", d =>
-            getRadius(d.days)
-        )
+        .attr("r", d => {
 
+            return getRadius(d.days);
 
-        // Colour
-
-        .attr("fill", d =>
-
-            companionColors[d.companions]
-            || "#22223B"
-
-        )
+        })
 
 
-        // Transparency
+        // ==========================================
+        // COLOUR
+        // ==========================================
 
-        .attr("fill-opacity", d =>
-            getOpacity(d.days)
-        )
+        .attr("fill", d => {
+
+            return companionColors[d.companions]
+                || "#22223B";
+
+        })
+
+
+        // ==========================================
+        // TRANSPARENCY
+        // ==========================================
+
+        .attr("fill-opacity", d => {
+
+            return getOpacity(d.days);
+
+        })
 
 
         // ==========================================
@@ -267,7 +307,7 @@ Promise.all([
                     </strong>
 
                     <div class="tooltip-story">
-                        ${d.tooltip}
+                        ${d.tooltip || ""}
                     </div>
 
                     <div class="tooltip-meta">
@@ -283,16 +323,59 @@ Promise.all([
 
         .on("mousemove", function(event) {
 
-            tooltip
-                .style(
-                    "left",
-                    `${event.clientX + 15}px`
-                )
+            const tooltipNode = tooltip.node();
 
-                .style(
-                    "top",
-                    `${event.clientY + 15}px`
-                );
+            const tooltipWidth =
+                tooltipNode.offsetWidth;
+
+            const tooltipHeight =
+                tooltipNode.offsetHeight;
+
+
+            let left =
+                event.clientX + 15;
+
+            let top =
+                event.clientY + 15;
+
+
+            /*
+             * Keep tooltip inside right edge.
+             */
+
+            if (
+                left + tooltipWidth >
+                window.innerWidth - 10
+            ) {
+
+                left =
+                    event.clientX -
+                    tooltipWidth -
+                    15;
+
+            }
+
+
+            /*
+             * Keep tooltip inside bottom edge.
+             */
+
+            if (
+                top + tooltipHeight >
+                window.innerHeight - 10
+            ) {
+
+                top =
+                    event.clientY -
+                    tooltipHeight -
+                    15;
+
+            }
+
+
+            tooltip
+                .style("left", `${left}px`)
+                .style("top", `${top}px`);
 
         })
 
@@ -309,15 +392,26 @@ Promise.all([
     // PLACE TYPE FILTER
     // ==========================================
 
+    /*
+     * IMPORTANT:
+     *
+     * Current HTML uses:
+     *     .filter-btn
+     *     data-filter
+     *
+     * So the JavaScript must use exactly
+     * those names.
+     */
+
     const filterButtons =
-        d3.selectAll(".filter");
+        d3.selectAll(".filter-btn");
 
 
     filterButtons.on("click", function() {
 
         const selectedType =
             d3.select(this)
-                .attr("data-type");
+                .attr("data-filter");
 
 
         // Update active button
@@ -343,7 +437,7 @@ Promise.all([
 
                 return d.type === selectedType
                     ? 1
-                    : 0;
+                    : 0.08;
 
             });
 
@@ -354,8 +448,15 @@ Promise.all([
     // LINEAR / LOGARITHMIC SCALE SWITCH
     // ==========================================
 
+    /*
+     * Current HTML uses:
+     *     .scale-btn
+     *
+     * So the JavaScript must use that class.
+     */
+
     const scaleButtons =
-        d3.selectAll(".scale-button");
+        d3.selectAll(".scale-btn");
 
 
     scaleButtons.on("click", function() {
@@ -382,13 +483,17 @@ Promise.all([
             .transition()
             .duration(600)
 
-            .attr("r", d =>
-                getRadius(d.days)
-            )
+            .attr("r", d => {
 
-            .attr("fill-opacity", d =>
-                getOpacity(d.days)
-            );
+                return getRadius(d.days);
+
+            })
+
+            .attr("fill-opacity", d => {
+
+                return getOpacity(d.days);
+
+            });
 
     });
 
@@ -467,5 +572,13 @@ Promise.all([
                 );
 
         });
+
+})
+.catch(error => {
+
+    console.error(
+        "Error loading map or places data:",
+        error
+    );
 
 });
