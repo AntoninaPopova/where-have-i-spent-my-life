@@ -62,37 +62,83 @@ Promise.all([
 
     places.forEach(d => {
 
+        // Numeric fields
+
         d.latitude = +d.latitude;
         d.longitude = +d.longitude;
         d.days = +d.days;
 
-        /*
-         * Support both possible column names.
-         */
 
-        d.companions = (
-            d.companions ||
-            d.companion ||
-            ""
-        )
+        // Text fields
+
+        d.type = (d.type || "")
             .trim()
             .toLowerCase();
 
-        /*
-         * Normalize place type as well.
-         */
-
-        d.type = (
-            d.type ||
-            ""
-        )
+        d.life_stage = (d.life_stage || "")
             .trim()
             .toLowerCase();
+
+        d.companion = (d.companion || "")
+            .trim()
+            .toLowerCase();
+
+        d.date_type = (d.date_type || "")
+            .trim()
+            .toLowerCase();
+
+
+        // Keep date fields as strings.
+        // They describe the time period but do not
+        // determine the bubble size.
+
+        d.year = (d.year || "").trim();
+        d.date_apx = (d.date_apx || "").trim();
+        d.start_date = (d.start_date || "").trim();
+        d.end_date = (d.end_date || "").trim();
 
     });
 
 
-    console.log("Places:", places);
+    // ==========================================
+    // DEBUG INFORMATION
+    // ==========================================
+
+    console.log("CSV columns:", places.columns);
+
+    console.log("Number of places:", places.length);
+
+    console.log("First place:", places[0]);
+
+    console.log(
+        "Min days:",
+        d3.min(places, d => d.days)
+    );
+
+    console.log(
+        "Max days:",
+        d3.max(places, d => d.days)
+    );
+
+    console.log(
+        "Invalid days:",
+        places.filter(d => !Number.isFinite(d.days))
+    );
+
+    console.log(
+        "Invalid coordinates:",
+        places.filter(d =>
+            !Number.isFinite(d.latitude) ||
+            !Number.isFinite(d.longitude)
+        )
+    );
+
+    console.table(
+        places.filter(d =>
+            !Number.isFinite(d.latitude) ||
+            !Number.isFinite(d.longitude)
+        )
+    );
 
 
     // ==========================================
@@ -110,9 +156,7 @@ Promise.all([
         .selectAll("path")
         .data(countries.features)
         .join("path")
-
         .attr("class", "country")
-
         .attr("d", path);
 
 
@@ -139,12 +183,13 @@ Promise.all([
 
 
     // ==========================================
-    // LINEAR RADIUS
+    // POWER RADIUS
     // ==========================================
 
-    const radiusLinear = d3.scaleLinear()
+    const radiusPower = d3.scalePow()
+        .exponent(0.15)
         .domain([minDays, maxDays])
-        .range([2.5, 18]);
+        .range([2.5, 12]);
 
 
     // ==========================================
@@ -153,14 +198,15 @@ Promise.all([
 
     const radiusLog = d3.scaleLog()
         .domain([minDays, maxDays])
-        .range([2.5, 18]);
+        .range([2.5, 12]);
 
 
     // ==========================================
-    // LINEAR OPACITY
+    // POWER OPACITY
     // ==========================================
 
-    const opacityLinear = d3.scaleLinear()
+    const opacityPower = d3.scalePow()
+        .exponent(0.35)
         .domain([minDays, maxDays])
         .range([0.9, 0.18]);
 
@@ -180,8 +226,8 @@ Promise.all([
 
     function getRadius(days) {
 
-        if (currentScale === "linear") {
-            return radiusLinear(days);
+        if (currentScale === "power") {
+            return radiusPower(days);
         }
 
         return radiusLog(days);
@@ -190,8 +236,8 @@ Promise.all([
 
     function getOpacity(days) {
 
-        if (currentScale === "linear") {
-            return opacityLinear(days);
+        if (currentScale === "power") {
+            return opacityPower(days);
         }
 
         return opacityLog(days);
@@ -211,6 +257,114 @@ Promise.all([
         "with friends": "#22223B"
 
     };
+
+
+    // ==========================================
+    // DISPLAY LABELS
+    // ==========================================
+
+    const displayLabels = {
+
+        // Type
+
+        "home": "Home",
+
+        "purpose": "Purpose",
+
+        "leisure": "Leisure",
+
+
+        // Life stage
+
+        "childhood": "Childhood",
+
+        "student": "Student",
+
+        "early career": "Early career",
+
+        "international career": "International career",
+
+        "transition": "Transition",
+
+        "family": "Family",
+
+
+        // Companion
+
+        "alone": "Alone",
+
+        "with family": "With family",
+
+        "with friends": "With friends"
+
+    };
+
+
+    function formatLabel(value) {
+
+        return displayLabels[value] || value;
+
+    }
+
+
+    // ==========================================
+    // CALCULATE PROJECTED POSITIONS
+    // ==========================================
+
+    places.forEach(d => {
+
+        const projected = projection([
+            d.longitude,
+            d.latitude
+        ]);
+
+        d.baseX = projected[0];
+        d.baseY = projected[1];
+
+    });
+
+
+    // ==========================================
+    // HANDLE REPEATED LOCATIONS
+    //
+    // If several observations have exactly the
+    // same coordinates, slightly separate them
+    // around the original point so that every
+    // observation remains accessible.
+    // ==========================================
+
+    const locationGroups = d3.group(
+        places,
+        d => `${d.latitude},${d.longitude}`
+    );
+
+
+    locationGroups.forEach(group => {
+
+        if (group.length <= 1) {
+            return;
+        }
+
+
+        // Small visual separation in SVG coordinates
+
+        const offsetDistance = 5;
+
+
+        group.forEach((d, i) => {
+
+            const angle =
+                (2 * Math.PI * i) / group.length;
+
+            d.offsetX =
+                Math.cos(angle) * offsetDistance;
+
+            d.offsetY =
+                Math.sin(angle) * offsetDistance;
+
+        });
+
+    });
 
 
     // ==========================================
@@ -240,19 +394,13 @@ Promise.all([
 
         .attr("cx", d => {
 
-            return projection([
-                d.longitude,
-                d.latitude
-            ])[0];
+            return d.baseX + (d.offsetX || 0);
 
         })
 
         .attr("cy", d => {
 
-            return projection([
-                d.longitude,
-                d.latitude
-            ])[1];
+            return d.baseY + (d.offsetY || 0);
 
         })
 
@@ -274,7 +422,7 @@ Promise.all([
 
         .attr("fill", d => {
 
-            return companionColors[d.companions]
+            return companionColors[d.companion]
                 || "#22223B";
 
         })
@@ -302,18 +450,34 @@ Promise.all([
 
                 .html(`
 
-                    <strong>
+                    <div class="tooltip-place">
+
                         ${d.city}, ${d.country}
-                    </strong>
+
+                        ${d.year
+
+                            ? `<span class="tooltip-date"> · ${d.year}</span>`
+
+                            : ""
+
+                        }
+
+                    </div>
 
                     <div class="tooltip-story">
+
                         ${d.tooltip || ""}
+
                     </div>
 
                     <div class="tooltip-meta">
-                        ${d.days.toLocaleString()} days ·
-                        ${d.type} ·
-                        ${d.companions}
+
+                        ${d.days.toLocaleString()} days
+
+                        · ${d.type}
+
+                        · ${d.companion}
+
                     </div>
 
                 `);
@@ -339,9 +503,7 @@ Promise.all([
                 event.clientY + 15;
 
 
-            /*
-             * Keep tooltip inside right edge.
-             */
+            // Keep tooltip inside right edge
 
             if (
                 left + tooltipWidth >
@@ -356,9 +518,7 @@ Promise.all([
             }
 
 
-            /*
-             * Keep tooltip inside bottom edge.
-             */
+            // Keep tooltip inside bottom edge
 
             if (
                 top + tooltipHeight >
@@ -392,17 +552,6 @@ Promise.all([
     // PLACE TYPE FILTER
     // ==========================================
 
-    /*
-     * IMPORTANT:
-     *
-     * Current HTML uses:
-     *     .filter-btn
-     *     data-filter
-     *
-     * So the JavaScript must use exactly
-     * those names.
-     */
-
     const filterButtons =
         d3.selectAll(".filter-btn");
 
@@ -414,6 +563,12 @@ Promise.all([
                 .attr("data-filter");
 
 
+        // Hide any existing tooltip
+
+        tooltip
+            .style("display", "none");
+
+
         // Update active button
 
         filterButtons
@@ -423,21 +578,41 @@ Promise.all([
             .classed("active", true);
 
 
-        // Show / hide places
+        // Show only selected places
 
         placeCircles
             .transition()
-            .duration(400)
+            .duration(300)
 
             .style("opacity", d => {
 
                 if (selectedType === "all") {
+
                     return 1;
+
                 }
 
                 return d.type === selectedType
+
                     ? 1
-                    : 0.08;
+
+                    : 0;
+
+            })
+
+            .style("pointer-events", d => {
+
+                if (selectedType === "all") {
+
+                    return "all";
+
+                }
+
+                return d.type === selectedType
+
+                    ? "all"
+
+                    : "none";
 
             });
 
@@ -445,23 +620,14 @@ Promise.all([
 
 
     // ==========================================
-    // LINEAR / LOGARITHMIC SCALE SWITCH
+    // POWER / LOGARITHMIC SCALE SWITCH
     // ==========================================
-
-    /*
-     * Current HTML uses:
-     *     .scale-btn
-     *
-     * So the JavaScript must use that class.
-     */
 
     const scaleButtons =
         d3.selectAll(".scale-btn");
 
 
     scaleButtons.on("click", function() {
-
-        // Get selected scale
 
         currentScale =
             d3.select(this)
@@ -521,6 +687,18 @@ Promise.all([
 
 
     // ==========================================
+    // INITIAL MAP POSITION
+    // ==========================================
+
+    svg.call(
+        zoom.transform,
+        d3.zoomIdentity
+            .translate(-250, -55)
+            .scale(1.65)
+    );
+
+
+    // ==========================================
     // ZOOM IN
     // ==========================================
 
@@ -528,7 +706,7 @@ Promise.all([
         .on("click", () => {
 
             svg.transition()
-                .duration(300)
+                .duration(400)
 
                 .call(
                     zoom.scaleBy,

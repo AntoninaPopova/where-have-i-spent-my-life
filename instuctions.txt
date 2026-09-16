@@ -1,0 +1,530 @@
+PROJECT: WHERE HAVE I SPENT MY LIFE?
+
+PURPOSE
+
+This is a personal interactive data-visualisation project built with D3.js.
+
+The map visualises where I have spent my life: places where I lived, studied/worked, or travelled. The central idea is that a life can be measured geographically, but duration is not the same as intensity. A place where someone spent a few days can sometimes matter more than a place where they spent years.
+
+The map measures time. The comments reveal meaning.
+
+This is both:
+
+1. a finished portfolio piece demonstrating data visualisation / information design skills;
+2. a personal record of my life through geography.
+
+The tone should be thoughtful, restrained, elegant and personal — never motivational, sentimental, overly poetic, or self-help-like.
+
+TECHNOLOGY
+
+* HTML
+* CSS
+* JavaScript
+* D3.js v7
+* topojson-client
+* world-atlas 110m
+* No framework
+* Runs locally through a simple local server.
+* Hosted on GitHub Pages.
+
+Repository:
+https://github.com/AntoninaPopova/where-have-i-spent-my-life
+
+GitHub Pages:
+https://antoninapopova.github.io/where-have-i-spent-my-life/
+
+PROJECT FILES
+
+Main files:
+
+index.html
+style.css
+script.js
+data/places.csv
+
+Do not restructure the project unnecessarily.
+
+DATASET
+
+The current dataset contains 143 observations.
+
+Current CSV columns, in this exact order:
+
+id
+year
+date_apx
+start_date
+end_date
+date_type
+country
+city
+type
+life_stage
+tooltip
+companion
+latitude
+longitude
+days
+
+Definitions:
+
+id
+Unique observation ID.
+
+year
+Human-readable year or period displayed in the tooltip.
+Examples:
+1991–2008
+2013
+20–22 Aug 2025
+
+date_apx
+Approximate/human-readable date used for remembering and documenting the observation.
+
+start_date
+Machine-readable start date in ISO format.
+
+end_date
+Machine-readable end date in ISO format.
+
+date_type
+Either:
+
+* exact
+* year
+
+country
+Country name.
+
+city
+City/place name.
+
+type
+One of:
+
+* home
+* purpose
+* leisure
+
+life_stage
+One of:
+
+* childhood
+* student
+* early career
+* international career
+* transition
+* family
+
+life_stage is retained in the dataset but is NOT displayed in the tooltip.
+
+tooltip
+The personal story/comment associated with the observation.
+
+companion
+One of:
+
+* alone
+* with family
+* with friends
+
+latitude / longitude
+Coordinates used for the map.
+
+days
+Number of days used as the visual weight of the observation.
+
+IMPORTANT:
+days is deliberately defined by the dataset and should NOT be automatically recalculated from start_date/end_date. Some observations represent approximate periods, repeated visits, or deliberately defined visual weights.
+
+VISUAL ENCODING
+
+Circle size represents time spent.
+
+Circle opacity also represents time spent.
+
+Shorter stays should remain visually visible and distinguishable from longer stays.
+
+The current default scale is logarithmic.
+
+Available scale options:
+
+* Power
+* Logarithmic
+
+Current radius ranges:
+
+Power:
+range [2, 13]
+exponent 0.15
+
+Logarithmic:
+range [2, 13]
+
+Current opacity ranges:
+Power:
+range [0.9, 0.18]
+exponent 0.35
+
+Logarithmic:
+range [0.9, 0.18]
+
+If adjusting the visual scales, preserve the basic principle:
+very short observations (for example 1, 5 or 43 days) must remain distinguishable rather than being visually swallowed by observations lasting years.
+
+Do not make the largest circles unnecessarily dominant.
+
+COLOUR ENCODING
+
+Circle colour represents who accompanied me.
+
+Alone:
+#C9ADA7
+
+With family:
+#9A8C98
+
+With friends:
+#22223B
+
+Do not introduce additional colours unless there is a strong information-design reason.
+
+MAP
+
+Projection:
+D3 Natural Earth.
+
+The initial map view is deliberately zoomed and positioned to make the user’s meaningful geographic range more prominent rather than presenting the entire world equally.
+
+Current initial transform:
+
+translate(-250, -55)
+scale(1.65)
+
+Do not change the initial positioning casually.
+
+Zoom:
+
+* scale extent 1–8
+* mouse/touch zoom enabled
+* zoom-in button
+* zoom-out button
+* reset button
+
+FILTERS
+
+The map has three categorical filters:
+
+All
+Home
+Purpose
+Leisure
+
+Filter behaviour:
+
+* selected observations remain fully visible;
+* non-selected observations disappear completely;
+* non-selected observations must have pointer-events disabled;
+* hidden observations must not trigger tooltips.
+
+When changing filters, close any currently open tooltip.
+
+MULTIPLE OBSERVATIONS AT THE SAME LOCATION
+
+Several observations can have exactly the same latitude/longitude.
+
+Do NOT solve this by sorting circles and using .raise().
+
+This creates poor stacking behaviour and can make other observations inaccessible.
+
+Instead:
+
+1. calculate the projected base position;
+2. group observations by exact latitude/longitude;
+3. if multiple observations share a location, distribute them around the base position using small radial offsets.
+
+Current offset distance:
+22 SVG pixels.
+
+The current implementation uses:
+
+angle = (2 * Math.PI * i) / group.length
+
+offsetX = Math.cos(angle) * offsetDistance
+offsetY = Math.sin(angle) * offsetDistance
+
+The circle position is:
+
+baseX + offsetX
+baseY + offsetY
+
+Do not remove this mechanism unless replacing it with another solution that keeps every overlapping observation accessible.
+
+TOOLTIP
+
+Tooltip structure must remain conceptually divided into three parts:
+
+1. PLACE + DATE
+2. STORY
+3. DETAILS
+
+Example:
+
+KAZAN, RUSSIA · 1991–2008
+
+The place where I was born and spent about half of my life. It is the place I return to when I want to feel where I come from.
+
+4,967 days · home · with family
+
+The tooltip should NOT display life_stage.
+
+Current tooltip hierarchy:
+
+.tooltip-place
+.tooltip-date
+.tooltip-story
+.tooltip-meta
+
+The tooltip:
+
+* has no border;
+* has a subtle shadow;
+* uses a light background;
+* should remain compact;
+* should not become a large card;
+* should remain readable on mobile.
+
+Current desktop max-width:
+300px
+
+Current mobile max-width:
+250px
+
+WRITING STYLE FOR TOOLTIP STORIES
+
+The story should explain why a place matters, preferably through a concrete memory, experience or observation.
+
+Good structure:
+CONCRETE EXPERIENCE → WHAT IT CHANGED / REVEALED
+
+Avoid:
+
+* generic travel descriptions;
+* tourist-guide language;
+* inspirational clichés;
+* excessive sentimentality;
+* abstract life lessons;
+* self-help language;
+* trying to make every place sound profound.
+
+The comments should sound like a person remembering something accurately, not like a person trying to manufacture meaning.
+
+Examples of the desired tone:
+
+“The place where I was born and spent about half of my life. It is the place I return to when I want to feel where I come from.”
+
+“A new chapter of my life, bringing an experience I could hardly have imagined: learning to live and work in an international community. Somewhere along the way, I started to feel less like someone from a city written in a passport and more like someone from planet Earth.”
+
+“I deliberately left several medical trips off this map. This one, however, belongs here. These few days marked one of the biggest transformations in my life: I realised I needed to search for a different purpose, even when I could not yet see what it was.”
+
+The writing should remain concise.
+
+CURRENT SUBTITLE
+
+The current subtitle is:
+
+“A life is distributed across cities, countries and continents: some places take up years, others only a moment. Duration, however, is not the same as intensity. A few days can sometimes matter more than years. This map traces that distribution through the places I’ve lived, studied, worked and travelled, from a few days to several years.”
+
+Do not change this wording unless explicitly asked.
+
+DESIGN
+
+Overall visual language:
+
+* restrained
+* editorial
+* elegant
+* quiet
+* slightly feminine without being decorative
+* information-first
+* muted colours
+* generous whitespace
+
+Background:
+#f7f7f5
+
+Main text:
+#22223B
+
+Secondary text:
+#777
+
+Country fill:
+#e5e5e1
+
+Countries have a very subtle white border.
+
+Do not introduce:
+
+* gradients
+* excessive animation
+* decorative illustrations
+* unnecessary UI
+* strong saturated colours
+* heavy borders
+* generic dashboard styling
+
+TYPOGRAPHY
+
+Current primary font:
+Arial, sans-serif
+
+The title is relatively large but restrained.
+
+The visual style should feel closer to an editorial publication or data essay than a commercial dashboard.
+
+INTERACTION PRINCIPLES
+
+Interactions should be subtle.
+
+Use transitions where they improve comprehension, but do not animate purely for decoration.
+
+Current filter transition:
+300ms
+
+Current scale transition:
+600ms
+
+Tooltips should appear on hover.
+
+Do not use .raise() on circles.
+
+Do not introduce interaction patterns that make the map difficult to understand.
+
+RESPONSIVE DESIGN
+
+The map has responsive CSS for mobile and smaller screens.
+
+Mobile tooltip:
+max-width 250px
+padding 12px 14px
+smaller typography
+
+Do not unnecessarily rewrite the responsive CSS when making desktop changes.
+
+After changing the map or tooltip, test:
+
+* desktop
+* narrow mobile
+* landscape mobile if possible
+
+IMPORTANT DESIGN PRINCIPLES
+
+1. Every visual element should have an information purpose.
+2. The map should remain the dominant element.
+3. The data should feel personal without becoming visually cluttered.
+4. Short trips must remain visible.
+5. Long periods must not visually swallow everything else.
+6. Multiple observations at one location must remain accessible.
+7. Tooltips should provide meaning, not duplicate the dataset.
+8. Avoid unnecessary controls.
+9. Do not turn the project into a generic travel map.
+10. Preserve the distinction between measuring time and explaining meaning.
+
+WHEN EDITING THE CODE
+
+Before changing code:
+
+* understand the existing structure;
+* make the smallest change necessary;
+* preserve working functionality;
+* do not rewrite entire files when a small edit is sufficient;
+* do not change data structure unless necessary;
+* do not rename existing CSV columns casually;
+* do not remove existing responsive behaviour.
+
+When providing code changes, clearly identify:
+
+* which file to edit;
+* which section to replace;
+* what the new code should be.
+
+Do not invent columns or variables that do not exist in the current dataset.
+
+If a bug is reported, first identify the underlying interaction/data issue rather than applying a superficial visual fix.
+
+CURRENT CONCEPTUAL FRAME
+
+The project is not primarily about travel.
+
+It is about how a life is distributed across geography and time.
+
+The visualisation asks:
+
+Where have I spent my life?
+
+But the deeper distinction is:
+
+TIME tells us how much of a life a place occupied.
+STORY tells us what that place meant.
+
+A few days can sometimes matter more than years.
+
+The map should make that tension visible without explaining it too heavily.
+
+PROJECT STATUS
+
+The core visualisation is functional.
+
+Current major features:
+
+* world map
+* 143 observations
+* categorical filters
+* Power / Logarithmic scale switch
+* circle size and opacity encoding
+* companion colour encoding
+* interactive tooltips
+* zoom controls
+* responsive layout
+* handling of overlapping observations
+* GitHub Pages deployment
+
+Future changes should be incremental and deliberate.
+
+DO NOT
+
+Do not:
+
+* add features simply because they are technically possible;
+* make the map look like a dashboard;
+* use excessive animation;
+* add unnecessary legends;
+* expose life_stage in the tooltip;
+* recalculate days automatically;
+* use .raise() to solve overlapping observations;
+* allow hidden filtered observations to capture pointer events;
+* replace personal stories with generic descriptions;
+* make every observation sound equally important;
+* over-explain the concept in the interface;
+* sacrifice readability for visual cleverness.
+
+FINAL TEST AFTER CHANGES
+
+After any significant change, verify:
+
+1. The CSV still loads.
+2. All 143 observations are present.
+3. Filters work.
+4. Hidden observations cannot trigger tooltips.
+5. Power and Logarithmic scales work.
+6. Short observations remain visible.
+7. Long observations remain visually dominant but not overwhelming.
+8. Multiple observations at the same coordinates remain individually accessible.
+9. Tooltips show PLACE + DATE / STORY / DETAILS.
+10. Life_stage is not shown in the tooltip.
+11. Zoom controls work.
+12. Reset works.
+13. Desktop layout works.
+14. Mobile layout works.
+15. No console errors are introduced.

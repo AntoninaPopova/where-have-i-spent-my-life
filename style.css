@@ -411,27 +411,28 @@ svg {
 
 
 /* =========================
-   TOOLTIP
-   ========================= */
 
+   TOOLTIP
+
+   ========================= */
 #tooltip {
+
     position: fixed;
 
     display: none;
 
-    max-width: 280px;
+    max-width: 300px;
 
     padding: 14px 16px;
 
     background: #f7f7f5;
-
-    border: 1px solid #d8d8d4;
 
     pointer-events: none;
 
     font-family: Arial, sans-serif;
 
     font-size: 13px;
+
     font-weight: 400;
 
     line-height: 1.5;
@@ -441,31 +442,57 @@ svg {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
     z-index: 1000;
+
 }
 
-#tooltip strong {
-    display: block;
+.tooltip-place {
 
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 
     font-size: 14px;
+
     font-weight: 600;
 
     letter-spacing: 0.03em;
 
     text-transform: uppercase;
+
+}
+
+.tooltip-date {
+
+    font-family: Arial, sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.03em;
+
+    text-transform: uppercase;
+
+    color: #22223B;
+
+    text-transform: none;
+
+    letter-spacing: normal;
+
 }
 
 .tooltip-story {
+
     margin-bottom: 9px;
 
     line-height: 1.5;
+
 }
 
 .tooltip-meta {
+
     font-size: 11px;
 
     color: #777;
+
 }
 
 
@@ -617,6 +644,12 @@ svg {
     .tooltip-meta {
         font-size: 10px;
     }
+
+    .tooltip-date {
+
+    font-size: 11px;
+
+}
 }
 
 
